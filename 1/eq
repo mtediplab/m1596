@@ -1,0 +1,45 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+img = cv2.imread('image.jpg', 0)
+
+hist = np.zeros(256)
+for i in range(img.shape[0]):
+    for j in range(img.shape[1]):
+        hist[img[i, j]] += 1
+
+pdf = hist / (img.shape[0] * img.shape[1])
+
+cdf = np.zeros(256)
+cdf[0] = pdf[0]
+for i in range(1, 256):
+    cdf[i] = cdf[i-1] + pdf[i]
+
+cdf_normalized = np.round(cdf * 255)
+
+equalized_img = np.zeros_like(img)
+
+for i in range(img.shape[0]):
+    for j in range(img.shape[1]):
+        equalized_img[i, j] = cdf_normalized[img[i, j]]
+
+equalized_img = np.array(equalized_img, dtype=np.uint8)
+
+cv2.imshow('Original Image', img)
+cv2.imshow('Manual Equalized Image', equalized_img)
+
+plt.figure(figsize=(10,5))
+
+plt.subplot(1,2,1)
+plt.hist(img.ravel(), bins=256, range=[0,256])
+plt.title("Original Histogram")
+
+plt.subplot(1,2,2)
+plt.hist(equalized_img.ravel(), bins=256, range=[0,256])
+plt.title("Equalized Histogram")
+
+plt.show()
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
