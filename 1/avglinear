@@ -1,0 +1,27 @@
+import cv2
+import numpy as np
+
+img = cv2.imread('image.jpg', 0)
+
+h, w = img.shape
+k = 3
+pad = k // 2
+
+padded = np.zeros((h+2*pad, w+2*pad))
+padded[pad:pad+h, pad:pad+w] = img
+
+out = np.zeros_like(img)
+
+for i in range(h):
+    for j in range(w):
+        s = 0
+        for x in range(k):
+            for y in range(k):
+                s += padded[i+x][j+y]
+        out[i][j] = s // (k*k)
+
+cv2.imshow("Original", img)
+cv2.imshow("Average Filter", out)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
