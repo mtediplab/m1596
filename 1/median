@@ -1,0 +1,28 @@
+import cv2
+import numpy as np
+
+img = cv2.imread('image.jpg', 0)
+
+h, w = img.shape
+k = 3
+pad = k // 2
+
+padded = np.zeros((h+2*pad, w+2*pad))
+padded[pad:pad+h, pad:pad+w] = img
+
+out = np.zeros_like(img)
+
+for i in range(h):
+    for j in range(w):
+        arr = []
+        for x in range(k):
+            for y in range(k):
+                arr.append(padded[i+x][j+y])
+        arr.sort()
+        out[i][j] = arr[len(arr)//2]
+
+cv2.imshow("Original", img)
+cv2.imshow("Median Filter", out)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
